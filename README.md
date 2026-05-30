@@ -20,6 +20,7 @@ cd SE-mini-proj
 ```
 
 ### 2. Install Dependencies
+(Run from here if you directly downloaded code as zip)
 Ensure you have Python installed, then install the required libraries:
 ```bash
 pip install -r requirements.txt
