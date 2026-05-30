@@ -15,7 +15,7 @@ class Scheduler:
                 "name": row["Name"],
                 "main_subject": row["Main Subject"],
                 "side_subject": row["Side Subject"] if pd.notna(row["Side Subject"]) else "",
-                "max_daily_hours": row["Max Working Hours/Day"],
+                "max_daily_hours": int(row["Max Working Hours/Day"]),
                 "hours_today": 0
             })
             
@@ -28,7 +28,7 @@ class Scheduler:
         for _, row in self.classroom_df.iterrows():
             c_id = row["Classroom ID"]
             subj = row["Subject"]
-            hours = row["Required Hours/Week"]
+            hours = int(row["Required Hours/Week"])
             self.requirements[c_id][subj] = hours
 
     def reset_daily_hours(self):

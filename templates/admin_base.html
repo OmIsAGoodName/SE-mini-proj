@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="admin-layout">
+    <aside class="sidebar">
+        <h3>Admin Menu</h3>
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin_generate_view') }}" class="sidebar-link {% if request.endpoint == 'admin_generate_view' %}active{% endif %}">Timetable Generation</a>
+            <a href="{{ url_for('admin_preview') }}" class="sidebar-link {% if request.endpoint == 'admin_preview' %}active{% endif %}">Data Preview</a>
+            <a href="{{ url_for('admin_add') }}" class="sidebar-link {% if request.endpoint == 'admin_add' %}active{% endif %}">Add Info</a>
+        </nav>
+    </aside>
+    <main class="admin-content">
+        {% block admin_content %}{% endblock %}
+    </main>
+</div>
+{% endblock %}

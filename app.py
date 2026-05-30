@@ -56,27 +56,36 @@ def admin():
     if not is_admin():
         flash("You must be logged in to view the admin dashboard.", "error")
         return redirect(url_for('login'))
-        
-    # Read excel data for preview
+    return redirect(url_for('admin_generate_view'))
+
+@app.route('/admin/generate_view')
+def admin_generate_view():
+    if not is_admin(): return redirect(url_for('login'))
+    generated_tables = session.get('generated_tables', None)
+    return render_template('admin_generate.html', generated_tables=generated_tables, is_admin=is_admin())
+
+@app.route('/admin/preview')
+def admin_preview():
+    if not is_admin(): return redirect(url_for('login'))
+    
     try:
-        faculty_df = pd.read_excel('faculty.xlsx')
+        faculty_df = pd.read_excel('faculty.xlsx').dropna(how='all').dropna(axis=1, how='all').fillna("")
         faculty_html = faculty_df.to_html(classes="data-table", index=False)
     except Exception:
         faculty_html = "<p>No faculty data found.</p>"
         
     try:
-        classroom_df = pd.read_excel('classroom.xlsx')
+        classroom_df = pd.read_excel('classroom.xlsx').dropna(how='all').dropna(axis=1, how='all').fillna("")
         classroom_html = classroom_df.to_html(classes="data-table", index=False)
     except Exception:
         classroom_html = "<p>No classroom data found.</p>"
+        
+    return render_template('admin_preview.html', faculty_html=faculty_html, classroom_html=classroom_html, is_admin=is_admin())
 
-    generated_tables = session.get('generated_tables', None)
-    
-    return render_template('admin.html', 
-                           faculty_html=faculty_html, 
-                           classroom_html=classroom_html,
-                           generated_tables=generated_tables,
-                           is_admin=is_admin())
+@app.route('/admin/add')
+def admin_add():
+    if not is_admin(): return redirect(url_for('login'))
+    return render_template('admin_add.html', is_admin=is_admin())
 
 @app.route('/admin/add_faculty', methods=['POST'])
 def admin_add_faculty():
@@ -94,7 +103,7 @@ def admin_add_faculty():
     except Exception as e:
         flash(f"Error adding faculty: {e}", "error")
         
-    return redirect(url_for('admin'))
+    return redirect(url_for('admin_add'))
 
 @app.route('/admin/add_classroom', methods=['POST'])
 def admin_add_classroom():
@@ -110,7 +119,7 @@ def admin_add_classroom():
     except Exception as e:
         flash(f"Error adding requirement: {e}", "error")
         
-    return redirect(url_for('admin'))
+    return redirect(url_for('admin_add'))
 
 @app.route('/admin/generate', methods=['POST'])
 def admin_generate():
@@ -138,7 +147,7 @@ def admin_generate():
     except Exception as e:
         flash(f"Error generating timetable: {str(e)}", "error")
         
-    return redirect(url_for('admin'))
+    return redirect(url_for('admin_generate_view'))
 
 @app.route('/admin/publish', methods=['POST'])
 def admin_publish():
@@ -151,7 +160,7 @@ def admin_publish():
     else:
         flash("No generated timetables found to publish.", "error")
         
-    return redirect(url_for('admin'))
+    return redirect(url_for('admin_generate_view'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

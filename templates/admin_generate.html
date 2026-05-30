@@ -1,0 +1,33 @@
+{% extends "admin_base.html" %}
+
+{% block admin_content %}
+<div class="card results-section">
+    <h2>Timetable Generation</h2>
+    <div style="margin-bottom: 20px;">
+        <form action="{{ url_for('admin_generate') }}" method="POST" style="display: inline-block;">
+            <button type="submit" class="btn btn-primary">Generate New Timetable</button>
+        </form>
+        
+        {% if generated_tables %}
+        <form action="{{ url_for('admin_publish') }}" method="POST" style="display: inline-block; margin-left: 10px;">
+            <button type="submit" class="btn" style="background-color: #28a745; color: white; border-color: #28a745;">Publish to Homepage</button>
+        </form>
+        {% endif %}
+    </div>
+
+    {% if generated_tables %}
+        <div class="generated-preview">
+            <h3 style="margin-bottom: 15px;">Preview (Not yet published)</h3>
+            <hr style="margin: 10px 0 20px; border: 0; border-top: 1px solid #e1e4e8;">
+            {% for t in generated_tables %}
+                <div class="timetable-wrapper">
+                    <h4>{{ t.classroom }}</h4>
+                    {{ t.html | safe }}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="empty-state">Click "Generate New Timetable" to create a schedule based on current data.</p>
+    {% endif %}
+</div>
+{% endblock %}
