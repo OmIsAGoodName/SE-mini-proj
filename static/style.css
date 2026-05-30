@@ -34,6 +34,24 @@ header {
     padding-bottom: 10px;
 }
 
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.auth-links .nav-link {
+    margin-left: 15px;
+    text-decoration: none;
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.auth-links .nav-link:hover {
+    text-decoration: underline;
+}
+
 h1 {
     font-size: 24px;
     font-weight: 600;
@@ -100,7 +118,7 @@ label {
     margin-bottom: 5px;
 }
 
-input[type="text"], input[type="number"] {
+input[type="text"], input[type="number"], input[type="password"] {
     width: 100%;
     padding: 8px 10px;
     font-size: 14px;
@@ -167,31 +185,47 @@ input:focus {
     overflow-x: auto;
 }
 
-.timetable-wrapper h3 {
+.timetable-wrapper h3, .timetable-wrapper h4 {
     font-size: 15px;
     margin-bottom: 10px;
     color: #586069;
 }
 
-.timetable-table {
+/* Base style for both timetable grids and raw data preview grids */
+.timetable-table, .data-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
+    margin-bottom: 15px;
 }
 
-.timetable-table th, .timetable-table td {
+.timetable-table th, .timetable-table td, 
+.data-table th, .data-table td {
     border: 1px solid var(--border-color);
-    padding: 10px;
-    text-align: center;
+    padding: 8px;
+    text-align: left;
 }
 
-.timetable-table th {
+.timetable-table th, .data-table th {
     background-color: #f6f8fa;
     font-weight: 600;
+}
+
+.timetable-table td {
+    text-align: center;
 }
 
 .timetable-table td small {
     color: #586069;
     display: block;
     margin-top: 3px;
+}
+
+.empty-state {
+    color: #586069;
+    font-style: italic;
+    text-align: center;
+    padding: 30px;
+    background-color: #f6f8fa;
+    border-radius: 4px;
 }

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="results-section">
+    <h2>Published Timetables</h2>
+    
+    {% if tables %}
+        {% for t in tables %}
+            <div class="timetable-wrapper">
+                <h3>{{ t.classroom }}</h3>
+                {{ t.html | safe }}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="empty-state">No timetables have been published yet. Please check back later.</p>
+    {% endif %}
+</div>
+{% endblock %}
