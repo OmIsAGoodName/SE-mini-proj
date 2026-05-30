@@ -1,10 +1,11 @@
 import pandas as pd
 import random
+import math
 
 class Scheduler:
     def __init__(self, faculty_file, classroom_file):
-        self.faculty_df = pd.read_excel(faculty_file)
-        self.classroom_df = pd.read_excel(classroom_file)
+        self.faculty_df = pd.read_excel(faculty_file).dropna(subset=["Name", "Max Working Hours/Day"])
+        self.classroom_df = pd.read_excel(classroom_file).dropna(subset=["Classroom ID", "Required Hours/Week"])
         self.days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         self.slots_per_day = 6
         
@@ -52,11 +53,17 @@ class Scheduler:
     def generate_timetable(self):
         timetable = []
         
-        for day in self.days:
+        remaining_hours = {c: sum(self.requirements[c].values()) for c in self.classrooms}
+        
+        for i, day in enumerate(self.days):
             self.reset_daily_hours()
             
             # To avoid scheduling the same subject multiple times a day if possible
             scheduled_today = {c: set() for c in self.classrooms}
+            classes_today = {c: 0 for c in self.classrooms}
+            
+            remaining_days = 5 - i
+            daily_limit = {c: math.ceil(remaining_hours[c] / remaining_days) if remaining_days > 0 else 0 for c in self.classrooms}
             
             for slot in range(1, self.slots_per_day + 1):
                 busy_faculty_this_slot = set()
@@ -66,6 +73,13 @@ class Scheduler:
                 random.shuffle(cls_list)
                 
                 for c_id in cls_list:
+                    if classes_today[c_id] >= daily_limit[c_id]:
+                        timetable.append({
+                            "Classroom": c_id, "Day": day, "Slot": f"Period {slot}",
+                            "Subject": "Free", "Faculty": "-"
+                        })
+                        continue
+                        
                     available_subjects = [s for s, h in self.requirements[c_id].items() if h > 0]
                     
                     if not available_subjects:
@@ -89,6 +103,8 @@ class Scheduler:
                             })
                             faculty["hours_today"] += 1
                             self.requirements[c_id][subject] -= 1
+                            remaining_hours[c_id] -= 1
+                            classes_today[c_id] += 1
                             scheduled_today[c_id].add(subject)
                             busy_faculty_this_slot.add(faculty["name"])
                             assigned = True
@@ -98,7 +114,7 @@ class Scheduler:
                         # Could not assign anything (constraints too tight or bug)
                         timetable.append({
                             "Classroom": c_id, "Day": day, "Slot": f"Period {slot}",
-                            "Subject": "Conflict/Free", "Faculty": "-"
+                            "Subject": "Free", "Faculty": "-"
                         })
                         
         return pd.DataFrame(timetable)
